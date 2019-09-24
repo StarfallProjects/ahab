@@ -9,11 +9,11 @@ function buildPage($source, $destDir) {
     # convert markdown source to html and add to new file
     (ConvertFrom-Markdown $source).Html | Add-Content -Path $output
     # search new file for any @use statements
-    $find = Select-String -Path $output -Pattern '<!-- @use \w+ -->' -AllMatches -CaseSensitive
+    $findUse = Select-String -Path $output -Pattern '<!-- @use \w+ -->' -AllMatches -CaseSensitive
     # if file contains @use statements, proceed to add snippets
-    if($null -ne $find) {
+    if($null -ne $findUse) {
         # add each snippet in turn
-        foreach($use in $find) {
+        foreach($use in $findUse) {
             # get the snippet name
             $a,$b = ($use.Matches[0].Value).split(' ')[1,2]
             # get the path and contents of the snippet
@@ -23,27 +23,39 @@ function buildPage($source, $destDir) {
             (Get-Content -Path $use.Path) -replace $use.Line, $snippet | Set-Content -Path $output
         }
     }    
-    # add any snippets specified in config.json defaultSnippets
-    if($config.defaultSnippets){       
-        foreach($i in $config.defaultSnippets){
-            $snippetPath = $snippetDir + '/' + $i.name  + '.html'
-            $snippet = Get-Content -Path $snippetPath
-            if($i.position -eq "start"){
-                $a = Get-Content -Path $output
-                Set-Content -Path $output -value $snippet,$a
-            }
-            if($i.position -eq "end"){
-                $a = Get-Content -Path $output
-                Set-Content -Path $output -value $a,$snippet
-            }
+    # add start snippet
+    if($config.defaultSnippets.start){       
+        $snippetPath = $snippetDir + '/' + $config.defaultSnippets.start  + '.html'
+        $snippet = Get-Content -Path $snippetPath
+        $a = Get-Content -Path $output
+        Set-Content -Path $output -value $snippet,$a
+    }
+    # add end snippet
+    if($config.defaultSnippets.end){       
+        $snippetPath = $snippetDir + '/' + $config.defaultSnippets.end  + '.html'
+        $snippet = Get-Content -Path $snippetPath
+        $a = Get-Content -Path $output
+        Set-Content -Path $output -value $a,$snippet
+    }
+    # modify resource URLs
+    $findBaseURL = Select-String -Path $output -Pattern '@BaseURL' -AllMatches -CaseSensitive
+    if($null -ne $findBaseURL) {
+        foreach($base in $findBaseURL) {
+            (Get-Content -Path $base.Path) -replace '@BaseURL', $siteBaseURL | Set-Content -Path $output
         }
     }
+
 }
 
 
 # load user config file
 $config = Get-Content -path config.json | ConvertFrom-Json
 
+# set base URL
+$siteBaseURL = $config.baseURL
+if($null -eq $siteBaseURL) {
+    Write-Host "Error: no base URL"
+}
 # set content directory
 if($config.contentDir){ 
     $contentDir = $config.contentDir
@@ -56,7 +68,13 @@ if($config.buildDir){
 } else { 
     $buildDir = "site"
 }
-# set templates directory
+# set assets directory
+if($config.assetsDir){ 
+    $assetsDir = $config.assetsDir
+} else { 
+    $assetsDir = "assets"
+}
+# set snippets directory
 if($config.snippetDir){ 
     $snippetDir = $config.snippetDir
 } else { 
@@ -68,6 +86,9 @@ if(test-path $buildDir) {
     Remove-Item -r $buildDir
 }
 New-Item -Path $buildDir -ItemType "directory"
+
+# copy the assets directory and contents into build
+Copy-Item -Path $assetsDir -Destination $buildDir -Recurse
 
 
 # get all items in the contents directory

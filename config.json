@@ -1,15 +1,11 @@
 {
+    "baseURL": "http://127.0.0.1:8000",
     "contentDir": "contents",
     "buildDir": "site",
+    "assetsDir": "assets",
     "snippetDir": "snippets",
-    "defaultSnippets": [
-        {
-            "name": "head",
-            "position": "start"
-        },
-        {
-            "name": "footer",
-            "position": "end"
-        }
-    ]
+    "defaultSnippets": {
+        "start": "head",
+        "end": "footer"
+    }
 }

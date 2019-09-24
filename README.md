@@ -23,7 +23,7 @@ Option two:
 
 ```ps
 # set scripts directory to your scripts folder
-$ps_script_dir = "<YOUR PATH>\Powershell\scripts"
+$ps_script_dir = "<your path>\Powershell\scripts"
 # alias the ahab command
 New-Alias ahab $ps_script_dir/ahab.ps1
 ```
@@ -39,6 +39,48 @@ Ahab requires a simple project structure:
 - A `site` directory for the build output (Ahab creates this during build)
 
 You can configure the names of these directories in the `config.json`.
+
+Ahab treats `index.md` files as the homepage files of their directory. Other files are output as `filename\index.html`.
+
+Example:
+```
+This structure:
+
+Project
+|
++-- contents
+|  |
+|  +-- index.md
+|  +-- aFile.md
+|  +-- myFolder
+|      |
+|      +-- index.md
+|      +-- anotherFile.md
+
+Becomes:
+
+Project
+|
++-- site
+|  |
+|  +-- index.html
+|  +-- aFile
+|      |
+|      +-- index.html
+|  +-- myFolder
+|      |
+|      +-- index.html
+|      +-- anotherFile
+|          |
+|          +-- index.html
+```
+
+This affects linking between pages. When writing links in your Markdown files, use `@BaseURL` and the path to the file from the root of your site:
+```
+This is my example link to the file named [anotherFile](@BaseURL/myFolder/anotherFile) in the diagram above.
+
+This is my [example link](@BaseURL/myFolder) to the `index.md` file in `myFolder` in the diagrame above.
+```
 
 ## Configuration
 
@@ -82,7 +124,7 @@ If you do not use the optional configuration settings, Ahab uses the following d
 
 Snippets are pieces of HTML that you can include in your site's pages. There are two ways of including snippets.
 
-### Using defaultSnippets in your configuration file
+### With defaultSnippets in your configuration file
 
 Use the `defaultSnippets` configuration option to include snippets that you want on every page of your site. You can add one to the start of each page, and one to the end.
 
@@ -119,7 +161,7 @@ Ahab takes `snippets/head.html` and adds the contents at the start of every page
 </html
 ```
 
-### In your Markdown
+### With @use Markdown
 
 Add the following at any point in your Markdown to include an HTML snippet:
 
@@ -133,3 +175,23 @@ For example:
 ```
 
 Ahab replaces the line with the contents of `snippets/nav.html`.
+
+## Including assets
+
+Your CSS, JavaScript, images and any other asset files are stored in the `assets` directory.
+
+To include them in your snippets or Markdown files, use `@BaseURL` followed by the path to the asset.
+
+For example, adding a CSS link to your `head.html` snippet:
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>YOUR SITE TITLE</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="@BaseURL/assets/styles.css" />
+    </head>
+<body>
+```
+

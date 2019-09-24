@@ -1,3 +1,22 @@
+# All the functions
+
+function buildPage($source, $destDir) {
+    $output = New-Item -Path $destDir'\index.html'
+    (ConvertFrom-Markdown $source).Html | Add-Content -Path $output
+    $find = Select-String -Path $output -Pattern '<!-- @use \w+ -->' -AllMatches -CaseSensitive
+    if($null -ne $find) {
+        foreach($use in $find) {
+            $a,$b = ($use.Matches[0].Value).split(' ')[1,2]
+            $templatePath = 'templates/' + $b + '.html'
+            $template = Get-Content -Path $templatePath
+            (Get-Content -Path $use.Path) -replace $use.Line, $template | Set-Content -Path $output
+        }
+    }
+    
+}
+
+
+
 # load user config file
 $config = Get-Content -path config.json | ConvertFrom-Json
 
@@ -13,8 +32,6 @@ if($config.buildDir){
 } else { 
     $buildDir = "site"
 }
-
-
 
 # if the build directory already exists, remove it and all its contents
 if(test-path $buildDir) {
@@ -34,14 +51,16 @@ foreach($f in $fileList)
     if (Test-Path -Path $f -PathType Leaf) {
         if ($f.Name -eq "index.md") {
             $destDir = Split-Path ($f -replace $contentDir, $buildDir)
-            (ConvertFrom-Markdown $f).Html | Out-File -FilePath $destDir'\index.html'
+            buildPage $f $destDir
         } else {
             $destDir = New-Item -Path (Split-Path ($f -replace $contentDir, $buildDir)) -Name (Get-Item $f).BaseName -ItemType "directory"
-            (ConvertFrom-Markdown $f).Html | Out-File -FilePath $destDir'\index.html'
+            buildPage $f $destDir
         }
     }
     elseif (Test-Path -Path $f -PathType Container) {
          New-Item -Path ($f -replace $contentDir, $buildDir)  -ItemType "directory" 
     }
 }
+
+
 

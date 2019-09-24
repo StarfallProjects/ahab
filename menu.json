@@ -1,0 +1,12 @@
+{
+    "index.md": {
+        "title": "Home",
+        "url": "/",
+        "template": "home"
+    },
+    "testFolder/test1.md" : {
+        "title": "Test1",
+        "url": "/test1/",
+        "template": "single"
+    }
+}

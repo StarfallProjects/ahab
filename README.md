@@ -2,6 +2,8 @@
 
 A (very) basic static site generator in PowerShell
 
+There is a simple example site available [here](https://github.com/StarfallProjects/ahab-example-site).
+
 ## Install
 
 Ahab requires PowerShell Core 6.0 minimum.
@@ -158,7 +160,7 @@ Ahab takes `snippets/head.html` and adds the contents at the start of every page
 <!-- end snippet -->
 
 </body>
-</html
+</html>
 ```
 
 ### With @use Markdown

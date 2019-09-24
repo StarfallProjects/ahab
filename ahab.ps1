@@ -17,13 +17,12 @@ function buildPage($source, $destDir) {
             # get the snippet name
             $a,$b = ($use.Matches[0].Value).split(' ')[1,2]
             # get the path and contents of the snippet
-            $templatePath = 'templates/' + $b + '.html'
+            $templatePath = $templateDir + '/' + $b + '.html'
             $template = Get-Content -Path $templatePath
             # replace the @use line in the new file with the contents of the snippet
             (Get-Content -Path $use.Path) -replace $use.Line, $template | Set-Content -Path $output
         }
-    }
-    
+    }    
 }
 
 # load user config file
@@ -40,6 +39,12 @@ if($config.buildDir){
     $buildDir = $config.buildDir
 } else { 
     $buildDir = "site"
+}
+# set templates directory
+if($config.templateDir){ 
+    $templateDir = $config.templateDir
+} else { 
+    $templateDir = "templates"
 }
 
 # if the build directory already exists, remove it and all its contents
@@ -70,6 +75,3 @@ foreach($f in $fileList)
          New-Item -Path ($f -replace $contentDir, $buildDir)  -ItemType "directory" 
     }
 }
-
-
-

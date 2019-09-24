@@ -1,4 +1,5 @@
 {
     "contentDir": "contents",
-    "buildDir": "dist"
+    "buildDir": "site",
+    "templateDir": "templates"
 }

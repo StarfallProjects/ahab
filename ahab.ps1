@@ -40,6 +40,7 @@ function buildPage($source, $destDir) {
     }
 }
 
+
 # load user config file
 $config = Get-Content -path config.json | ConvertFrom-Json
 

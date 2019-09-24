@@ -81,7 +81,7 @@ This affects linking between pages. When writing links in your Markdown files, u
 ```
 This is my example link to the file named [anotherFile](@BaseURL/myFolder/anotherFile) in the diagram above.
 
-This is my [example link](@BaseURL/myFolder) to the `index.md` file in `myFolder` in the diagrame above.
+This is my [example link](@BaseURL/myFolder) to the index.md file in myFolder in the diagrame above.
 ```
 
 ## Configuration
@@ -144,10 +144,10 @@ Given the following `config.json`:
 
 Ahab takes `snippets/head.html` and adds the contents at the start of every page of your site, then takes `snippets/footer.html` and adds the contents at the end of every page of your site.
 
-**Note**: Ahab does not add any HTML when converting your Markdown to HTML. In other words, without default snippets, your site will have no `<!DOCTYPE>`, no `<head></head>`, and so on. It is strongly recommended to use the default snippets to provide this, at a minimum:
+> **Warning**: Ahab does not add any HTML when converting your Markdown to HTML. In other words, without default snippets, your site will have no `<!DOCTYPE>`, no `<head></head>`, and so on. It is strongly recommended to use the default snippets to provide this, at a minimum:
 
 ```html
-<!-- start snippet -->
+<!-- start snippet, for example head.html -->
 <!DOCTYPE html>
 <html>
     <head>
@@ -157,7 +157,7 @@ Ahab takes `snippets/head.html` and adds the contents at the start of every page
     </head>
 <body>
 
-<!-- end snippet -->
+<!-- end snippet, for example footer.html -->
 
 </body>
 </html>

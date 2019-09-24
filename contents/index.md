@@ -1,4 +1,3 @@
-<!-- @use head -->
 <!-- @use header -->
 
 
@@ -6,4 +5,4 @@
 
 Home
 
-<!-- @use footer -->
+

@@ -1,5 +1,15 @@
 {
     "contentDir": "contents",
     "buildDir": "site",
-    "templateDir": "templates"
+    "snippetDir": "snippets",
+    "defaultSnippets": [
+        {
+            "name": "head",
+            "position": "start"
+        },
+        {
+            "name": "footer",
+            "position": "end"
+        }
+    ]
 }

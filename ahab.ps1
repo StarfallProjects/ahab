@@ -17,12 +17,27 @@ function buildPage($source, $destDir) {
             # get the snippet name
             $a,$b = ($use.Matches[0].Value).split(' ')[1,2]
             # get the path and contents of the snippet
-            $templatePath = $templateDir + '/' + $b + '.html'
-            $template = Get-Content -Path $templatePath
+            $snippetPath = $snippetDir + '/' + $b + '.html'
+            $snippet = Get-Content -Path $snippetPath
             # replace the @use line in the new file with the contents of the snippet
-            (Get-Content -Path $use.Path) -replace $use.Line, $template | Set-Content -Path $output
+            (Get-Content -Path $use.Path) -replace $use.Line, $snippet | Set-Content -Path $output
         }
     }    
+    # add any snippets specified in config.json defaultSnippets
+    if($config.defaultSnippets){       
+        foreach($i in $config.defaultSnippets){
+            $snippetPath = $snippetDir + '/' + $i.name  + '.html'
+            $snippet = Get-Content -Path $snippetPath
+            if($i.position -eq "start"){
+                $a = Get-Content -Path $output
+                Set-Content -Path $output -value $snippet,$a
+            }
+            if($i.position -eq "end"){
+                $a = Get-Content -Path $output
+                Set-Content -Path $output -value $a,$snippet
+            }
+        }
+    }
 }
 
 # load user config file
@@ -41,10 +56,10 @@ if($config.buildDir){
     $buildDir = "site"
 }
 # set templates directory
-if($config.templateDir){ 
-    $templateDir = $config.templateDir
+if($config.snippetDir){ 
+    $snippetDir = $config.snippetDir
 } else { 
-    $templateDir = "templates"
+    $snippetDir = "snippets"
 }
 
 # if the build directory already exists, remove it and all its contents

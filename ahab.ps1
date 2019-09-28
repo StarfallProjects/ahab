@@ -9,7 +9,7 @@ function buildPage($source, $destDir) {
     # convert markdown source to html and add to new file
     (ConvertFrom-Markdown $source).Html | Add-Content -Path $output
     # search new file for any @use statements
-    $findUse = Select-String -Path $output -Pattern '<!-- @use \w+ -->' -AllMatches -CaseSensitive
+    $findUse = Select-String -Path $output -Pattern '{{ use \w+ }}' -AllMatches -CaseSensitive
     # if file contains @use statements, proceed to add snippets
     if($null -ne $findUse) {
         # add each snippet in turn
@@ -38,10 +38,10 @@ function buildPage($source, $destDir) {
         Set-Content -Path $output -value $a,$snippet
     }
     # modify resource URLs
-    $findBaseURL = Select-String -Path $output -Pattern '@BaseURL' -AllMatches -CaseSensitive
+    $findBaseURL = Select-String -Path $output -Pattern '{{ BaseURL }}' -AllMatches -CaseSensitive
     if($null -ne $findBaseURL) {
         foreach($base in $findBaseURL) {
-            (Get-Content -Path $base.Path) -replace '@BaseURL', $siteBaseURL | Set-Content -Path $output
+            (Get-Content -Path $base.Path) -replace '{{ BaseURL }}', $siteBaseURL | Set-Content -Path $output
         }
     }
 

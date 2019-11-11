@@ -168,12 +168,12 @@ Ahab takes `snippets/head.html` and adds the contents at the start of every page
 Add the following at any point in your Markdown to include an HTML snippet:
 
 ```
-<!-- @use <snippetName> -->
+{{ use <snippetName> }}
 ```
 
 For example:
 ```
-<!-- @use nav -->
+{{ use nav }}
 ```
 
 Ahab replaces the line with the contents of `snippets/nav.html`.

@@ -8,9 +8,9 @@ function buildPage($source, $destDir) {
     $output = New-Item -Path $destDir'\index.html'
     # convert markdown source to html and add to new file
     (ConvertFrom-Markdown $source).Html | Add-Content -Path $output
-    # search new file for any @use statements
+    # search new file for any {{ use }} statements
     $findUse = Select-String -Path $output -Pattern '{{ use \w+ }}' -AllMatches -CaseSensitive
-    # if file contains @use statements, proceed to add snippets
+    # if file contains {{ use }} statements, proceed to add snippets
     if($null -ne $findUse) {
         # add each snippet in turn
         foreach($use in $findUse) {
@@ -19,7 +19,7 @@ function buildPage($source, $destDir) {
             # get the path and contents of the snippet
             $snippetPath = $snippetDir + '/' + $b + '.html'
             $snippet = Get-Content -Path $snippetPath
-            # replace the @use line in the new file with the contents of the snippet
+            # replace the {{ use }} line in the new file with the contents of the snippet
             (Get-Content -Path $use.Path) -replace $use.Line, $snippet | Set-Content -Path $output
         }
     }    
@@ -38,10 +38,10 @@ function buildPage($source, $destDir) {
         Set-Content -Path $output -value $a,$snippet
     }
     # modify resource URLs
-    $findBaseURL = Select-String -Path $output -Pattern '{{ BaseURL }}' -AllMatches -CaseSensitive
+    $findBaseURL = Select-String -Path $output -Pattern '@BaseURL' -AllMatches -CaseSensitive
     if($null -ne $findBaseURL) {
         foreach($base in $findBaseURL) {
-            (Get-Content -Path $base.Path) -replace '{{ BaseURL }}', $siteBaseURL | Set-Content -Path $output
+            (Get-Content -Path $base.Path) -replace '@BaseURL', $siteBaseURL | Set-Content -Path $output
         }
     }
 
